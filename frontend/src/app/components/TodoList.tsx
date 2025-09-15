@@ -32,6 +32,7 @@ export default function TodoList({ onLogout }: { onLogout: () => void }) {
     });
 
     useEffect(() => {
+        const currentLoader = loader.current;
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && hasNextPage) {
@@ -40,11 +41,12 @@ export default function TodoList({ onLogout }: { onLogout: () => void }) {
             },
             { threshold: 1 }
         );
-        if (loader.current) observer.observe(loader.current);
+        if (currentLoader) observer.observe(currentLoader);
         return () => {
-            if (loader.current) observer.unobserve(loader.current);
+            if (currentLoader) observer.unobserve(currentLoader);
         };
-    }, [loader, hasNextPage, fetchNextPage]);
+    }, [hasNextPage, fetchNextPage]);
+
 
     const createTodo = useMutation({
         mutationFn: (description: string) => api.post("/notes", { description }),

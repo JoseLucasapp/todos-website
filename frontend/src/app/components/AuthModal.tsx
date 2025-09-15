@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import api from "../lib/api";
+import axios from "axios";
 
 type AuthModalProps = {
     onLogin: () => void;
@@ -21,8 +22,8 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
             const res = await api.post("/auth/login", { username, password });
             localStorage.setItem("token", res.data.access_token);
             onLogin();
-        } catch (error: any) {
-            if (error.response) {
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     case 400:
                         setError(error.response.data.message);
@@ -34,6 +35,7 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                 setError("Network problem");
             }
         }
+
     };
 
     return (
